@@ -3,5 +3,14 @@
 version = 4
 
 [[package]]
+name = "near_enough"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93cb41a2a644e430054a4ec9ffd612300bce9f7fc69e4a04d9dc000f90267362"
+
+[[package]]
 name = "sifrator"
 version = "0.1.0"
+dependencies = [
+ "near_enough",
+]
