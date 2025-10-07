@@ -57,9 +57,7 @@ static ALPHABET: [char; 26] = [
 ];
 
 mod vigener_cipher {
-    use std::collections::BTreeMap;
     use std::collections::HashMap;
-
     use crate::{ALPHABET, CZECH_PROPABILITTIES, read_line, transpose};
 
     pub fn cipher() -> std::io::Result<()> {
@@ -97,18 +95,15 @@ mod vigener_cipher {
         let mut processed_characters: Vec<Vec<char>> = vec![];
         let mut key = String::new();
 
-        let mut char_frequencies: BTreeMap<char, i32> = BTreeMap::new();
+        let mut char_frequencies: HashMap<char, f64> = HashMap::new();
         for n in &each_of(st, key_length) {
             n.iter().for_each(|item| {
-                *char_frequencies.entry(*item).or_insert(0) += 1
+                *char_frequencies.entry(*item).or_insert(0.0) += 1.0 / n.len() as f64
             });
-            let mut char_frequencies_sorted: Vec<(&char, &i32)> = char_frequencies.iter().collect();
-            char_frequencies_sorted.sort_by(|a, b| b.1.cmp(a.1));
-            let char_relative_frequencies_sorted: Vec<(char,f64)> = char_frequencies_sorted.iter().map(|item| (*item.0,*item.1 as f64/n.len() as f64)).collect();
 
             let mut posible_keys: Vec<(char, char)> = vec![];
 
-            for item in &char_relative_frequencies_sorted {
+            for item in &char_frequencies {
                 if let Some((idx, closest)) =
                     CZECH_PROPABILITTIES.to_vec()
                         .iter()
@@ -120,11 +115,11 @@ mod vigener_cipher {
                                 .unwrap()
                         })
                 {
-                    posible_keys.push((item.0, closest.letter));
+                    posible_keys.push((*item.0, closest.letter));
                     let second_closest = if idx+1 >= 26 {0} else {idx+1};
-                    posible_keys.push((item.0, CZECH_PROPABILITTIES[second_closest].letter));
+                    posible_keys.push((*item.0, CZECH_PROPABILITTIES[second_closest].letter));
                     let third_closest = if idx+2 >= 26 {0} else {idx+2};
-                    posible_keys.push((item.0, CZECH_PROPABILITTIES[third_closest].letter));
+                    posible_keys.push((*item.0, CZECH_PROPABILITTIES[third_closest].letter));
                 }
             }
 
@@ -154,7 +149,7 @@ mod vigener_cipher {
 
             key.push(ALPHABET[shift]);
 
-            char_frequencies = BTreeMap::new();
+            char_frequencies = HashMap::new();
         }
         println!("Klíčem je: {}", key);
         println!("Rozšifrovaný text: {}", combine_to_ot(processed_characters));
