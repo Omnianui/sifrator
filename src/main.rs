@@ -67,9 +67,22 @@ mod vigener_cipher {
         let ot = read_line();
         println!("Zadejte klíč: ");
         let key = read_line();
-        let mut shifted_alphabets: Vec<[char; 26]> = vec![];
-        for item in key.chars() {}
-
+        let mut shifted_alphabets: Vec<Vec<char>> = vec![];
+        for item in key.chars() {
+            let mut a = ALPHABET.to_vec();
+            a.rotate_left(ALPHABET.iter().position(|c| *c == item).unwrap());
+            shifted_alphabets.push(a);
+        }
+        let mut st = String::new();
+        let mut i = 0;
+        for item in ot.chars(){
+            st.push(shifted_alphabets[i][ALPHABET.iter().position(|c| *c == item).unwrap()]);
+            i += 1;
+            if i == key.len() {
+                i = 0;
+            }
+        }
+        println!("Zašifrovaný text: {}", st);
         Ok(())
     }
 
@@ -93,14 +106,11 @@ mod vigener_cipher {
             char_frequencies_sorted.sort_by(|a, b| b.1.cmp(a.1));
             let char_relative_frequencies_sorted: Vec<(char,f64)> = char_frequencies_sorted.iter().map(|item| (*item.0,*item.1 as f64/n.len() as f64)).collect();
 
-            //let max_frequency = char_frequencies.iter().max_by_key(|z| z.1).unwrap();
             let mut posible_keys: Vec<(char, char)> = vec![];
-            
 
-            let propabilitties = CZECH_PROPABILITTIES.to_vec();
             for item in &char_relative_frequencies_sorted {
                 if let Some((idx, closest)) =
-                    propabilitties
+                    CZECH_PROPABILITTIES.to_vec()
                         .iter()
                         .enumerate()
                         .min_by(|(_, a_val), (_, b_val)| {
@@ -120,21 +130,13 @@ mod vigener_cipher {
 
             let mut shifts = HashMap::new();
             for item in posible_keys{
-                let first_position = ALPHABET
-                            .iter()
-                            .position(|c| *c == item.0)
-                            .unwrap();
+                let first_position = ALPHABET.iter().position(|c| *c == item.0).unwrap();
                 let second_position = ALPHABET.iter().position(|c| *c == item.1).unwrap();
                 let mut shift_key = first_position.abs_diff(second_position);
                 if first_position < second_position{
                     shift_key = 26 - shift_key;
                 }
-                *shifts
-                    .entry(shift_key)
-                    .or_insert(0) += 1
-            }
-            for i in &shifts {
-                println!("{} {}", i.0, i.1);
+                *shifts.entry(shift_key).or_insert(0) += 1
             }
 
             let shift = shifts
@@ -143,15 +145,11 @@ mod vigener_cipher {
                 .map(|(&ch, _)| ch)
                 .unwrap();
 
-            println!("{}", shift);
-
             let mut shifted_alphabet = ALPHABET;
             shifted_alphabet.rotate_left(shift);
 
             processed_characters.push(
-                n.iter()
-                    .map(|x| ALPHABET[shifted_alphabet.iter().position(|c| c == x).unwrap()])
-                    .collect(),
+                n.iter().map(|x| ALPHABET[shifted_alphabet.iter().position(|c| c == x).unwrap()]).collect(),
             );
 
             key.push(ALPHABET[shift]);

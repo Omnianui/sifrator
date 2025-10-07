@@ -3,6 +3,15 @@ dejlogmnpnnravvncvtkrsegvbcjkrkejuakwejurvenzfvippvtadpskbtepskjnrcycpjrloebskvp
 
 Klíč: bar
 OT:
+cesko plnym nazvem ceska republika je stat ve stredni evrope samostatnosti nabylo jako nastupnicky stat ceskoslovenska predtim existovalo jako jedna ze dvou republik ceskoslovenske federace navazuje take na vice nez tisicilete dejiny ceske statnosti a kultury podle sve ustavy je ceska republika parlamentni demokraticky pravni stat s liberalnim statnim rezimem a politickym systemem zalozenym na svobodne soutezi politickych stran a hnuti hlavou statu je prezident republiky vrcholnym a jedinym zakonodarnym organem je dvoukomorovy parlament ceske republiky na vrcholu moci vykonne stoji vlada ceske republiky cesko je zeme s trznim hospodarstvim ktera podle ekonomickych socialnich a politickych indikatoru jako je hdp na obyvatele index lidskeho rozvoje index svobody tisku ci index svobody internetu od cenzury patri k vysoce rozvinutym statum sveta ekonomicky patri dle svetove banky do skupiny tricetijedna nejbohatsich statu sveta s nejvyssimi financnimi prijmy v porovnani s jinymi staty ma velmi maly podil obyvatel zijicich pod prahem chudoby vykazuje tez pomerne nizkou nerovnost mezi nejbohatsimi a nejchudsimi obyvateli a relativne vyvazene prerozdelovani bohatstvi napric populaci mira nezamestnanosti je dlouhodobe nizka a pod prumerem vyspelych zemi v indexu ekologicke stopy je cesko oproti nekterym jinym vyspelym zemim mensim ekologickym dluznikem cesko se dlouhodobe radi mezi patnact nejbezpecnejsich zemi na svete
 
-
-Postup:
+Postup programu při rozšifrování:
+    1. program se zeptá uživatele na ST a déklu klíče
+    2. pomocí délky klíče je ST rozděleno do daného počtu vektorů
+    3. v každé vektoru je vypočítána relativní frekvence výskytu všech písmen
+    4. každé písmeno je pomocí této frekvence přiřazeno ke třem nejbližším frekvencím v české abecedě
+    5. z těchto párů jsou vypočítány možné posuny
+    6. posun, který se vyskytuje nejčastěji je následně použit k vygenerování posunuté abecedy a zjištění jednoho písmena klíče
+    7. tato abeceda je využita k rozšifrování daného vektoru
+    8. všechny takto zpracované vektory jsou sločeny do OT
+    9. klíč a OT jsou vypsány uživateli
