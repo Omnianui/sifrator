@@ -1,14 +1,11 @@
 use std::io::{Result, stdin};
-use near_enough::*;
-use std::{collections::HashMap, hash::Hash};
-
 struct LetterPrapabilitty {
     letter: char,
-    propabilitty: f32,
+    propabilitty: f64,
 }
 
 impl LetterPrapabilitty {
-    const fn new(letter: char, propabilitty: f32) -> LetterPrapabilitty {
+    const fn new(letter: char, propabilitty: f64) -> LetterPrapabilitty {
         LetterPrapabilitty {
             letter: letter,
             propabilitty: propabilitty,
@@ -16,16 +13,11 @@ impl LetterPrapabilitty {
     }
 }
 
-impl<T: Diff + Hash + Eq, V> Closest<T> for HashMap<T, V> {
-    type Value = V;
-
-    fn closest(&self, to: &T) -> Option<&Self::Value> {
-        let mut keys: Vec<&T> = self.values().into_iter().collect();
-        keys.sort_by(|a, b| a.diff(to).cmp(&b.diff(to)));
-
-        match keys.first() {
-            Some(key) => self.get(key),
-            None => None,
+impl Clone for LetterPrapabilitty {
+    fn clone(&self) -> Self {
+        LetterPrapabilitty {
+            letter: self.letter,
+            propabilitty: self.propabilitty,
         }
     }
 }
@@ -65,15 +57,18 @@ static ALPHABET: [char; 26] = [
 ];
 
 mod vigener_cipher {
+    use std::collections::BTreeMap;
     use std::collections::HashMap;
 
-    use crate::{read_line, transpose, ALPHABET, CZECH_PROPABILITTIES};
+    use crate::{ALPHABET, CZECH_PROPABILITTIES, read_line, transpose};
 
     pub fn cipher() -> std::io::Result<()> {
         println!("Zadejte text: ");
-
+        let ot = read_line();
         println!("Zadejte klíč: ");
-
+        let key = read_line();
+        let mut shifted_alphabets: Vec<[char; 26]> = vec![];
+        for item in key.chars() {}
 
         Ok(())
     }
@@ -87,40 +82,81 @@ mod vigener_cipher {
             .expect("nespravny format klice");
 
         let mut processed_characters: Vec<Vec<char>> = vec![];
-
         let mut key = String::new();
 
-        let mut char_frequencies: HashMap<char, usize> = HashMap::new();
+        let mut char_frequencies: BTreeMap<char, i32> = BTreeMap::new();
         for n in &each_of(st, key_length) {
-            for item in n {
-                *char_frequencies.entry(*item).or_insert(0) += 1;
+            n.iter().for_each(|item| {
+                *char_frequencies.entry(*item).or_insert(0) += 1
+            });
+            let mut char_frequencies_sorted: Vec<(&char, &i32)> = char_frequencies.iter().collect();
+            char_frequencies_sorted.sort_by(|a, b| b.1.cmp(a.1));
+            let char_relative_frequencies_sorted: Vec<(char,f64)> = char_frequencies_sorted.iter().map(|item| (*item.0,*item.1 as f64/n.len() as f64)).collect();
+
+            //let max_frequency = char_frequencies.iter().max_by_key(|z| z.1).unwrap();
+            let mut posible_keys: Vec<(char, char)> = vec![];
+            
+
+            let propabilitties = CZECH_PROPABILITTIES.to_vec();
+            for item in &char_relative_frequencies_sorted {
+                if let Some((idx, closest)) =
+                    propabilitties
+                        .iter()
+                        .enumerate()
+                        .min_by(|(_, a_val), (_, b_val)| {
+                            (a_val.propabilitty - item.1)
+                                .abs()
+                                .partial_cmp(&(b_val.propabilitty - item.1).abs())
+                                .unwrap()
+                        })
+                {
+                    posible_keys.push((item.0, closest.letter));
+                    let second_closest = if idx+1 >= 26 {0} else {idx+1};
+                    posible_keys.push((item.0, CZECH_PROPABILITTIES[second_closest].letter));
+                    let third_closest = if idx+2 >= 26 {0} else {idx+2};
+                    posible_keys.push((item.0, CZECH_PROPABILITTIES[third_closest].letter));
+                }
             }
 
-            let max_frequency = char_frequencies.iter().max_by_key(|z| z.1).unwrap();
-            let best_match  = CZECH_PROPABILITTIES.iter().min_by_key(|p| 
-                (p.propabilitty * (n.len() as f32) - char_frequencies.closest(p.propabilitty * (n.len() as f32)) as f32).round().abs() as i32).unwrap();
-            
-            println!("{}", best_match.letter);
-            let shift = ALPHABET.iter().position(|c| c == max_frequency.0).unwrap()
-                - ALPHABET
-                    .iter()
-                    .position(|c| *c == best_match.letter)
-                    .unwrap();
+            let mut shifts = HashMap::new();
+            for item in posible_keys{
+                let first_position = ALPHABET
+                            .iter()
+                            .position(|c| *c == item.0)
+                            .unwrap();
+                let second_position = ALPHABET.iter().position(|c| *c == item.1).unwrap();
+                let mut shift_key = first_position.abs_diff(second_position);
+                if first_position < second_position{
+                    shift_key = 26 - shift_key;
+                }
+                *shifts
+                    .entry(shift_key)
+                    .or_insert(0) += 1
+            }
+            for i in &shifts {
+                println!("{} {}", i.0, i.1);
+            }
+
+            let shift = shifts
+                .iter()
+                .max_by_key(|e| e.1)
+                .map(|(&ch, _)| ch)
+                .unwrap();
+
+            println!("{}", shift);
+
             let mut shifted_alphabet = ALPHABET;
             shifted_alphabet.rotate_left(shift);
 
             processed_characters.push(
                 n.iter()
-                    .map(|x| {
-                        ALPHABET
-                            [shifted_alphabet.iter().position(|c| c == x).unwrap()]
-                    })
+                    .map(|x| ALPHABET[shifted_alphabet.iter().position(|c| c == x).unwrap()])
                     .collect(),
             );
 
             key.push(ALPHABET[shift]);
 
-            char_frequencies = HashMap::new();
+            char_frequencies = BTreeMap::new();
         }
         println!("Klíčem je: {}", key);
         println!("Rozšifrovaný text: {}", combine_to_ot(processed_characters));
@@ -142,7 +178,7 @@ mod vigener_cipher {
 
     fn combine_to_ot(sectors: Vec<Vec<char>>) -> String {
         let mut buffer = String::new();
-        for i in transpose(sectors){
+        for i in transpose(sectors) {
             buffer.push_str(&i.iter().collect::<String>());
         }
         buffer
@@ -167,7 +203,6 @@ fn read_line() -> String {
     let mut input = String::new();
     stdin().read_line(&mut input).expect("failed to read");
     input.trim().to_string()
-    
 }
 
 fn main() -> Result<()> {
