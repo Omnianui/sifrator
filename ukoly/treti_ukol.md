@@ -81,7 +81,7 @@ y3: 1011111101011011
 CT: 00011010 01000101 10011010 01000000 10111111 01011011  
 
 # CTS
-CTS je stejné jako CBC, až na zpracování posledních dvou bloků, kde jsou k poslednímu neůplnému bloku přidány nuly. následně jsou také prohozeny poslední dva výsledné zašifrované bloky a z předposledního bloku je použita pouze tolik bitů, kolik bylo v posledním bloku otevřeného textu.
+CTS je stejné jako CBC, až na zpracování posledních dvou bloků, kde jsou k poslednímu neůplnému bloku přidány nuly. Následně jsou také prohozeny poslední dva výsledné zašifrované bloky a z předposledního bloku je použita pouze tolik bitů, kolik bylo v posledním bloku otevřeného textu.
 
 Změněný m3: 010101000111 0000
 
