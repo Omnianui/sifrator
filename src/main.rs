@@ -79,6 +79,7 @@ fn read_line() -> String {
 }
 
 fn main() -> Result<()> {
+    
     loop {
         println!("Zašifrovat nebo rozšifrovat (z/r): ");
         match read_line().as_str() {

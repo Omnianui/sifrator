@@ -4,4 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-near_enough = "0.1.0"
+sha2 = "0.10"
+sha3 = "0.10"
+whirlpool = "0.10"
+sm3 = "0.1"
+ripemd = "0.1"
+
