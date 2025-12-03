@@ -3,7 +3,7 @@ use std::time::{Instant, Duration};
 use sha2::{Sha256, Digest as d10};
 use sha3::Sha3_256;
 use whirlpool::Whirlpool;
-use sm3::{Sm3, Digest as d8};
+use tiger::Tiger;
 use ripemd::Ripemd256;
 
 // Definované délky vstupu v bajtech
@@ -24,8 +24,8 @@ impl HashFunction for Sha3_256 {
 impl HashFunction for Whirlpool {
     fn new() -> Self { Whirlpool::default() }
 }
-impl HashFunction for Sm3 {
-    fn new() -> Self { Sm3::default() }
+impl HashFunction for Tiger {
+    fn new() -> Self { Tiger::default() }
 }
 impl HashFunction for Ripemd256 {
     fn new() -> Self { Ripemd256::default() }
@@ -47,7 +47,6 @@ fn benchmark_hash_function<H: HashFunction>(name: &str) -> BenchmarkResult {
         
         while start.elapsed() < BENCHMARK_DURATION {
             let mut hasher = <H as HashFunction>::new();
-            // Proces hašování:
             hasher.update(&input_data);
             let _result = hasher.finalize();
             count += 1;
