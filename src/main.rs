@@ -85,6 +85,8 @@ fn main() -> Result<()> {
         match read_line().as_str() {
             "r" => cipher_engines::vigener_cipher::decipher()?,
             "z" => cipher_engines::vigener_cipher::cipher()?,
+            "b" => cipher_engines::hash_benchmark::benchmark_xls().unwrap(),
+            "g" => cipher_engines::password_finder::find_password(),
             "c" => break,
             _ => {}
         }

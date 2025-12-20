@@ -1,5 +1,6 @@
 # Záznam TLS hanshaku s www.uhk.cz
-## Verze TLS: 1.3 (Na fotce označeno červeně)
+## Verze TLS: 1.3
+
 ## Session ID:
 850f48037cfe66469e189557010683727b39fec6f8c56346433c67336c3a0d4e
 
@@ -26,7 +27,7 @@
 TLS_AES_256_GCM_SHA384 (0x1302)
 
 ## Certifikát serveru: 
-V komunikaci je nečitelný, protože ve verzi TLS 1.3 je šifrován a nachází se v hned následujícím packetu jako application data
+V komunikaci je nečitelný, protože ve verzi TLS 1.3 je šifrován a nachází se v packetu, který následuje hned po Change Cipher Spec packetu ze strany serveru, jako application data
 
 ## Byl handshake úspěšný: 
 Ano, v komunikaci se nenachází žádný Alert packet a oběma směry prošel packet typu Change Cipher Spec (v přiloženém obrázku jsou označeny modře)
